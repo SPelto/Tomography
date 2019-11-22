@@ -1,19 +1,28 @@
 % Create a sinogram
 clear
 visualize = true;
-bonePath = 'D:\Tomography Project\Data\20191113_bone\corrected';
+
+bonePath = '/Users/anttikoivurova/Documents/MATLAB/tomoproject/Koivurova_Peltonen/20191113_bone/corrected'; % mac
+% bonePath = 'D:\Tomography Project\Data\20191113_bone\corrected'; % windows
 boneName = '20191113_bone';
 
-tomatoPath = 'D:\Tomography Project\Data\20191113_tomato\corrected';
+tomatoPath = '/Users/anttikoivurova/Documents/MATLAB/tomoproject/Koivurova_Peltonen/20191113_tomato/corrected'; % mac
+% tomatoPath = 'D:\Tomography Project\Data\20191113_tomato\corrected'; % windows 
 tomatoName = '20191113_tomato';
 
-if ~isfile("Sinogram_full.mat")
-    sinogram = createSino(bonePath, boneName, visualize);
+% Wanted sinogram parameters
+binning = 4;
+shift = 1;
+
+% Check if we have sinogram with wanted parameters already
+if ~isfile("Sinogram_full_bin_" + num2str(binning) + "_shift_" + num2str(shift) + ".mat")
+    sinogram = createSino(bonePath, boneName, binning, shift, visualize);
     figure('name', 'Sinogram')
     imshow(sinogram, [])
-    save('Sinogram_full', 'sinogram')
+    sinoFileName = "Sinogram_full_bin_" + num2str(binning) + "_shift_" + num2str(shift);
+    save(sinoFileName, 'sinogram')
 else 
-    load('Sinogram_full')
+    load("Sinogram_full_bin_" + num2str(binning) + "_shift_" + num2str(shift))
 end
 
 

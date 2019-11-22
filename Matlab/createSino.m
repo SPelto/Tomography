@@ -1,7 +1,6 @@
-function sinogram = createSino(filePath, name, visualize)
+function sinogram = createSino(filePath, photoName, binning, shift, visualize)
     addpath(filePath);
 
-    binning = 1;
     bkgSize = 2^7;
 
     sinogram = zeros(2240,360);
@@ -12,7 +11,7 @@ function sinogram = createSino(filePath, name, visualize)
         if mod(k,10) == 0
             disp(k)
         end
-        fileName = [name '_' sprintf('%03d', k) '.tif'];
+        fileName = [photoName '_' sprintf('%03d', k) '.tif'];
         im = double(imread(fileName));
         background = im(1:bkgSize/binning,1:bkgSize/binning);
 
