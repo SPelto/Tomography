@@ -3,11 +3,11 @@ function sinogram = createSino(filePath, photoName, binning, shift, angles, visu
 
     bkgSize = 2^7;
 
-    sinogram = zeros(2240 / binning, length(angles));
+    sinogram = zeros(2240 / binning, 360);
 
     figure(1)
     clf
-    for k = angles
+    for k = 1:361
         % Display progress
         if mod(k,10) == 0
             disp(k)
@@ -22,9 +22,8 @@ function sinogram = createSino(filePath, photoName, binning, shift, angles, visu
         im = circshift(im, shift, 1);
         
         % Do binning
-        if binning > 1
-            im = bin_projection(im, binning);
-        end
+        im = bin_projection(im, binning);
+
         I0 = mean(background(:));
         I = im(end/2,:);
 

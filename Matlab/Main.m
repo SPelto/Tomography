@@ -1,6 +1,7 @@
 % Create a sinogram
 clear
-visualize = true;
+close all
+visualize = false;
 
 bonePath = '/Users/anttikoivurova/Documents/MATLAB/tomoproject/Koivurova_Peltonen/20191113_bone/corrected'; % mac
 % bonePath = 'D:\Tomography Project\Data\20191113_bone\corrected'; % windows
@@ -11,12 +12,13 @@ tomatoPath = '/Users/anttikoivurova/Documents/MATLAB/tomoproject/Koivurova_Pelto
 tomatoName = '20191113_tomato';
 
 % Wanted sinogram parameters
-binning = 4;
-shift = 1;
+binning = 1;
+shift = 0;
+angles = 2:361; % Not 1:360 because the first picture measured is a blank one
 
 % Check if we have sinogram with wanted parameters already
 if ~isfile("Sinogram_full_bin_" + num2str(binning) + "_shift_" + num2str(shift) + ".mat")
-    sinogram = createSino(bonePath, boneName, binning, shift, visualize);
+    sinogram = createSino(bonePath, boneName, binning, shift, angles, visualize);
     figure('name', 'Sinogram')
     imshow(sinogram, [])
     sinoFileName = "Sinogram_full_bin_" + num2str(binning) + "_shift_" + num2str(shift);
@@ -39,21 +41,21 @@ D                       = DistanceSourceOrigin / effPixelSize;
 
 
 
-filters = ["Ram-Lak" "Shepp-Logan" "Cosine" "Hamming" "Hann" "None"]
+% filters = ["Ram-Lak" "Shepp-Logan" "Cosine" "Hamming" "Hann" "None"]
 % Choose a single filter if you do not wish to iterate over all
 % possibilities
 
-% filters = 'Ram-Lak'
-% filters = 'Shepp-Logan'
-% filters = 'Cosine'
-% filters = 'Hamming'
-% filters = 'Hann'
-% filters = 'None'
+% filters = ["Ram-Lak"];
+% filters = ["Shepp-Logan"];
+% filters = ["Cosine"];
+% filters = ["Hamming"];
+% filters = ["Hann"];
+filters = ["None"];
 
 ind = 0;
 for filter = filters
     ind = ind + 1;
-    reconstruction = ifanbeam(sinogram, D,'FanSensorGeometry', 'line', 'OutputSize', 2240, 'Filter', filter);
+    reconstruction = ifanbeam(sinogram, D,'FanSensorGeometry', 'line', 'OutputSize', 2240 / binning, 'Filter', filter);
     figure(ind)
     clf
     imshow(reconstruction,[])
