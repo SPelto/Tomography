@@ -1,7 +1,7 @@
 function sinogram = createSino(filePath, photoName, binning, shift, angles, visualize)
     addpath(filePath);
 
-    bkgSize = 2^7;
+    bkgSize = 2^8;
 
     sinogram = zeros(2240 / binning, length(angles));
 
@@ -10,26 +10,27 @@ function sinogram = createSino(filePath, photoName, binning, shift, angles, visu
     for k = angles
         % Display progress
         if mod(k,10) == 0
-            disp(k)
+            disp([k length(angles)])
         end
         
         % Load the picture
         fileName = [photoName '_' sprintf('%03d', k) '.tif'];
         im = double(imread(fileName));
-        background = im(1:bkgSize/binning,1:bkgSize/binning);
         
         % Shift the picture to center it based on rotation axis
         im = circshift(im, shift, 1);
-        
+
         % Do binning
         if binning > 1
             im = bin_projection(im, binning);
         end
+        background = im(1:bkgSize/binning,1:bkgSize/binning);
         I0 = mean(background(:));
         I = im(end/2,:);
 
         lineIntegral = -log(I./I0);
-        sinogram(:,k - 1) = lineIntegral;
+        
+        sinogram(:,k-1) = lineIntegral;
 
         if visualize
             sinogram2 = sinogram;

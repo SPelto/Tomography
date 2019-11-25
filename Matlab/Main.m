@@ -3,16 +3,16 @@ clear
 close all
 visualize = false;
 
-bonePath = '/Users/anttikoivurova/Documents/MATLAB/tomoproject/Koivurova_Peltonen/20191113_bone/corrected'; % mac
-% bonePath = 'D:\Tomography Project\Data\20191113_bone\corrected'; % windows
+% bonePath = '/Users/anttikoivurova/Documents/MATLAB/tomoproject/Koivurova_Peltonen/20191113_bone/corrected'; % mac
+bonePath = 'D:\gitProjects\Tomography\Data\20191113_bone\corrected'; % windows
 boneName = '20191113_bone';
 
-tomatoPath = '/Users/anttikoivurova/Documents/MATLAB/tomoproject/Koivurova_Peltonen/20191113_tomato/corrected'; % mac
-% tomatoPath = 'D:\Tomography Project\Data\20191113_tomato\corrected'; % windows 
+% tomatoPath = '/Users/anttikoivurova/Documents/MATLAB/tomoproject/Koivurova_Peltonen/20191113_tomato/corrected'; % mac
+% tomatoPath = 'D:\gitProjects\Tomography\Data\20191113_tomato\corrected'; % windows 
 tomatoName = '20191113_tomato';
 
 % Wanted sinogram parameters
-binning = 1;
+binning = 4;
 shift = 0;
 angles = 2:361; % Not 1:360 because the first picture measured is a blank one
 
@@ -41,7 +41,7 @@ D                       = DistanceSourceOrigin / effPixelSize;
 
 
 
-% filters = ["Ram-Lak" "Shepp-Logan" "Cosine" "Hamming" "Hann" "None"]
+filters = ["Ram-Lak" "Shepp-Logan" "Cosine" "Hamming" "Hann" "None"]
 % Choose a single filter if you do not wish to iterate over all
 % possibilities
 
@@ -50,7 +50,7 @@ D                       = DistanceSourceOrigin / effPixelSize;
 % filters = ["Cosine"];
 % filters = ["Hamming"];
 % filters = ["Hann"];
-filters = ["None"];
+% filters = ["None"];
 
 ind = 0;
 for filter = filters
@@ -60,7 +60,7 @@ for filter = filters
     clf
     imshow(reconstruction,[])
     title(filter)
-    set(gcf, 'Units', 'Normalized', 'OuterPosition', [-1, 0, 1, 1]);
+    set(gcf, 'Units', 'Normalized', 'OuterPosition', [-1, 0, 1, 1]); % Sets the figure to open at the left screen.
 end
 
 
