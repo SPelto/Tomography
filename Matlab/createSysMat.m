@@ -32,15 +32,7 @@ function A = createSysMat(dims,binning)
                                         DistanceSourceOrigin,...
                                         DistanceOriginDetector);
 
-    % For CPU-based algorithms, a "projector" object specifies the projection
-    % model used. In this case, we use the "strip" model.
-    proj_id = astra_create_projector('line_fanflat', proj_geom, vol_geom);
-
     % Get the projection matrix as a Matlab sparse matrix.
-    A = opTomo('line_fanflat', proj_geom,vol_geom);
-    
-    % Free memory
-    astra_mex_projector('delete', proj_id);
- 
+    A = opTomo('line_fanflat', proj_geom,vol_geom); 
 end
 
