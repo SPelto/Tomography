@@ -26,7 +26,8 @@ eval(['angles = ' angleString ';'])
 angleString(angleString == ':') = '_';
 
 sinoFileName = ['Sinogram_' angleString '_bin_'  num2str(binning) '_shift_' num2str(shift) '.mat'];
-% Check if we have sinogram with wanted parameters already
+
+%% Check if we have sinogram with wanted parameters already
 if ~isfile(sinoFileName)
     sinogram = createSino(bonePath, boneName, binning, shift, angles, visualize);
     figure('name', 'Sinogram')
