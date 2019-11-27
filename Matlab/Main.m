@@ -14,7 +14,7 @@ tomatoName = '20191113_tomato';
 % Wanted sinogram parameters
 binning = 4;
 shift = 0;
-angles = 2:361; % Not 1:360 because the first picture measured is a blank one
+angles = 2:1:361; % Not 1:360 because the first picture measured is a blank one
 
 % Check if we have sinogram with wanted parameters already
 if ~isfile("Sinogram_full_bin_" + num2str(binning) + "_shift_" + num2str(shift) + ".mat")
@@ -28,40 +28,61 @@ else
 end
 
 
+
 %% Calculate reconstruction using ifanbeam
 DistanceSourceDetector  = 552.18;
 DistanceOffsetSample    = 275; % Bone
 % DistanceOffsetSample    = 75;  % Tomato
 DistanceSourceOrigin    = 109.83 + DistanceOffsetSample;
-pixelSize               = 0.05;
+pixelSize               = 0.05*binning;
 M                       = DistanceSourceDetector / DistanceSourceOrigin;
 effPixelSize            = pixelSize / M;
 D                       = DistanceSourceOrigin / effPixelSize;
 
 
+filter = ["Ram-Lak"];
+% filter = ["Shepp-Logan"];
+% filter = ["Cosine"];
+% filter = ["Hamming"];
+% filter = ["Hann"];
+% filter = ["None"];
+
+reconstruction = ifanbeam(sinogram, D,...
+    'FanSensorGeometry', 'line',...
+    'OutputSize', 2240 / binning,...
+    'Filter', filter);
+
+figure(1)
+clf
+imshow(reconstruction,[])
+title(filter)
+set(gcf, 'Units', 'Normalized', 'OuterPosition', [-1, 0, 1, 1]); % Sets the figure to open at the left screen.
 
 
-filters = ["Ram-Lak" "Shepp-Logan" "Cosine" "Hamming" "Hann" "None"]
-% Choose a single filter if you do not wish to iterate over all
-% possibilities
+%% Create the forward projector
+A = createSysMat(binning);
+whos A
 
-% filters = ["Ram-Lak"];
-% filters = ["Shepp-Logan"];
-% filters = ["Cosine"];
-% filters = ["Hamming"];
-% filters = ["Hann"];
-% filters = ["None"];
+% ASTRA uses different orientation for the sinogram
+sinogram_T = sinogram.';
 
-ind = 0;
-for filter = filters
-    ind = ind + 1;
-    reconstruction = ifanbeam(sinogram, D,'FanSensorGeometry', 'line', 'OutputSize', 2240 / binning, 'Filter', filter);
-    figure(ind)
-    clf
-    imshow(reconstruction,[])
-    title(filter)
-    set(gcf, 'Units', 'Normalized', 'OuterPosition', [-1, 0, 1, 1]); % Sets the figure to open at the left screen.
-end
+recn = reshape(A.'*sinogram_T(:),[2048/binning,2048/binning]);
+
+% Plot the reconstruction
+figure(66)
+clf
+imagesc(recn)
+colormap gray
+
+
+
+
+
+
+
+
+
+
 
 
 

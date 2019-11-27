@@ -1,38 +1,44 @@
-function A = createSysMat(dims,binning) 
+function A = createSysMat(binning,angles)
     
-   %%%% Creates forward projector operator.
-   % dims       = Size of the image
+   %%%% Creates forward projector operator. %%%%
    % binning    = binningfactor
-   
+   % angles     = angles of the x-ray source
     
+    % Setup of the x-ray device
     DistanceOffsetSample    = 275; % Bone
     DistanceSourceDetector  = 552.18;
     DistanceSourceOrigin    = 109.83 + DistanceOffsetSample;
     DistanceOriginDetector  = DistanceSourceDetector - DistanceSourceOrigin;
-    pixelSize               = 0.05;
+    pixelSize               = 0.050 * binning;
     M                       = DistanceSourceDetector / DistanceSourceOrigin;
     effPixelSize            = pixelSize / M;
-    D                       = DistanceSourceOrigin / effPixelSize;
     
-    
-    % I think the problem lies in selecting these.
+    % Distance from source to origin specified in terms of effective pixel size
+    DSO             = DistanceSourceOrigin / effPixelSize;
+    % Distance from origin to detector specified in terms of effective pixel size
+    DOD             = DistanceOriginDetector /effPixelSize;
+
+    % Some necessary parameters for ASTRA
     detector_geom   = 'fanflat';
-    det_width       = 1%effPixelSize; % Especially this one
     det_count       = 2240/binning;
-    angles          = 1:360;
-    source_origin   = 109.83 + DistanceOffsetSample;
-    origin_det      = DistanceSourceDetector - DistanceSourceOrigin;
+    angles          = deg2rad(angles);
+    reconSize       = 2048/binning;
 
 
-    vol_geom = astra_create_vol_geom(dims(2),dims(1));
+    % Create the geometries necessary for ASTRA
+    vol_geom = astra_create_vol_geom(reconSize,reconSize);
     proj_geom = astra_create_proj_geom(detector_geom,...
-                                        det_width,...
+                                        M,...
                                         det_count,...
                                         angles,...
-                                        DistanceSourceOrigin,...
-                                        DistanceOriginDetector);
+                                        DSO,...
+                                        DOD);
 
     % Get the projection matrix as a Matlab sparse matrix.
-    A = opTomo('line_fanflat', proj_geom,vol_geom); 
+    A = opTomo('strip_fanflat', proj_geom,vol_geom);
+    
+    % Memory cleanup of mex files
+    astra_mex_data2d('delete', vol_geom);
+    astra_mex_data2d('delete', proj_geom);
 end
 
