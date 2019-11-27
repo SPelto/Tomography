@@ -14,17 +14,26 @@ tomatoName = '20191113_tomato';
 % Wanted sinogram parameters
 binning = 4;
 shift = 0;
-angles = 2:1:361; % Not 1:360 because the first picture measured is a blank one
 
+% We want the filename to have information about the angles, hence we give
+% the angle as a string so that it can be easily used in the filename.
+angleString = '2:2:361'; % Not 1:360 because the first picture measured is a blank one
+
+% Add angles as a variable based on the string
+eval(['angles = ' angleString ';']) 
+
+% Filenames doesn't allow for ":" characters, so we'll change them into "_"
+angleString(angleString == ':') = '_';
+
+sinoFileName = ['Sinogram_' angleString '_bin_'  num2str(binning) '_shift_' num2str(shift) '.mat'];
 % Check if we have sinogram with wanted parameters already
-if ~isfile("Sinogram_full_bin_" + num2str(binning) + "_shift_" + num2str(shift) + ".mat")
+if ~isfile(sinoFileName)
     sinogram = createSino(bonePath, boneName, binning, shift, angles, visualize);
     figure('name', 'Sinogram')
     imshow(sinogram, [])
-    sinoFileName = "Sinogram_full_bin_" + num2str(binning) + "_shift_" + num2str(shift);
     save(sinoFileName, 'sinogram')
 else 
-    load("Sinogram_full_bin_" + num2str(binning) + "_shift_" + num2str(shift))
+    load(sinoFileName)
 end
 
 
@@ -60,12 +69,16 @@ set(gcf, 'Units', 'Normalized', 'OuterPosition', [-1, 0, 1, 1]); % Sets the figu
 
 
 %% Create the forward projector
-A = createSysMat(binning,angles);
-whos A
+A_filename = ['A_angles_' angleString '_binning_' num2str(binning) '_shift_' num2str(shift)];
 
+if ~isfile(A_filename)
+    A = createSysMat(binning,angles);
+    save(A_filename, 'A')
+else
+    load(A_filename)
+end
 % ASTRA uses different orientation for the sinogram
 sinogram_T = sinogram.';
-
 recn = reshape(A.'*sinogram_T(:),[2048/binning,2048/binning]);
 
 % Plot the reconstruction
@@ -73,12 +86,6 @@ figure(66)
 clf
 imagesc(recn)
 colormap gray
-
-
-
-
-
-
 
 
 
