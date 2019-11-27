@@ -60,7 +60,7 @@ set(gcf, 'Units', 'Normalized', 'OuterPosition', [-1, 0, 1, 1]); % Sets the figu
 
 
 %% Create the forward projector
-A = createSysMat(binning);
+A = createSysMat(binning,angles);
 whos A
 
 % ASTRA uses different orientation for the sinogram
