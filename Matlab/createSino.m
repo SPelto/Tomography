@@ -1,13 +1,16 @@
 function sinogram = createSino(filePath, photoName, binning, shift, angles, visualize)
     addpath(filePath);
-
+    
     bkgSize = 2^8;
 
     sinogram = zeros(2240 / binning, length(angles));
 
     figure(1)
     clf
+    
+    ind = 0;
     for k = angles
+        ind = ind + 1;
         % Display progress
         if mod(k,10) == 0
             disp([k length(angles)])
@@ -30,7 +33,7 @@ function sinogram = createSino(filePath, photoName, binning, shift, angles, visu
 
         lineIntegral = -log(I./I0);
         
-        sinogram(:,k-1) = lineIntegral;
+        sinogram(:,ind) = lineIntegral;
 
         if visualize
             sinogram2 = sinogram;
