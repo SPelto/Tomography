@@ -3,21 +3,19 @@ clear
 close all
 visualize = false;
 
+bonePath = '/home/grozz/DATA';
 % bonePath = '/Users/anttikoivurova/Documents/MATLAB/tomoproject/Koivurova_Peltonen/20191113_bone/corrected'; % mac
-bonePath = 'D:\gitProjects\Tomography\Data\20191113_bone\corrected'; % windows
+% bonePath = 'D:\gitProjects\Tomography\Data\20191113_bone\corrected'; % windows
 boneName = '20191113_bone';
-
-% tomatoPath = '/Users/anttikoivurova/Documents/MATLAB/tomoproject/Koivurova_Peltonen/20191113_tomato/corrected'; % mac
-% tomatoPath = 'D:\gitProjects\Tomography\Data\20191113_tomato\corrected'; % windows 
-tomatoName = '20191113_tomato';
 
 % Wanted sinogram parameters
 binning = 4;
 shift = 0;
+N = 2048 / binning;
 
 % We want the filename to have information about the angles, hence we give
 % the angle as a string so that it can be easily used in the filename.
-angleString = '2:2:361'; % Not 1:360 because the first picture measured is a blank one
+angleString = '5:5:360'; % Now with normal angle indexing
 
 % Add angles as a variable based on the string
 eval(['angles = ' angleString ';']) 
@@ -80,7 +78,7 @@ else
 end
 % ASTRA uses different orientation for the sinogram
 sinogram_T = sinogram.';
-recn = reshape(A.'*sinogram_T(:),[2048/binning,2048/binning]);
+recn = reshape(A.'*sinogram_T(:),[N,N]);
 
 % Plot the reconstruction
 figure(66)
@@ -88,6 +86,30 @@ clf
 imagesc(recn)
 colormap gray
 
+%% Reconstruction with Tikhonov
+
+alphas = 10.^[1:0.5:7];
+X = zeros(length(alphas));
+Y = zeros(length(alphas));
+
+for iii=1:length(alphas)
+    alpha = alphas(iii);
+    Tik_rec = Solve_Tikh(sinogram_T, A, N, alpha);
+    figure;
+    imshow(Tik_rec, [])
+    
+    X(iii) = log(norm(A * Tik_rec(:) - sinogram_T(:)));
+    Y(iii) = log(norm(Tik_rec(:)));
+end
+
+figure;
+plot(X,Y,'bo-')
+Xn = (X - min(X)) / (max(X) - min(X));
+Yn = (Y - min(Y)) / (max(Y) - min(Y));
+
+[~, Tikh_min_index] = min(Xn.^2 + Yn.^2);
+hold on
+plot(X(Tikh_min_index), Y(Tikh_min_index), 'r.', 'MarkerSize', 25);
 
 
 

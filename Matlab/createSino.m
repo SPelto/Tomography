@@ -37,7 +37,7 @@ function sinogram = createSino(filePath, photoName, binning, shift, angles, visu
 
         if visualize
             sinogram2 = sinogram;
-            sinogram2(:,k - 1) = max(sinogram(:));
+            sinogram2(:,k) = max(sinogram(:));
             
             im2 = im;
             im2(end/2,:) = max(im(:));

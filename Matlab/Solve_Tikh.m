@@ -1,13 +1,12 @@
-function [Tik_rec] = Solve_Tikh(sino, A)
-    maxit = 200;
-    f0 = zeros(512);
+function [Tik_rec] = Solve_Tikh(sino, A, N, alpha)
+    maxit = 1000;
+    f0 = zeros(N);
     lambda_min = 1e-10;
     lambda_max = 1e10;
     gamma = 1.e-4;
     beta = 0.4;
     lambda = 1.3;
-    alpha = 1;
-    stopcrit = 1;
+    stopcrit = 3;
     tolstop = 1e-4;
 
     f_size = size(f0);
@@ -97,6 +96,4 @@ function [Tik_rec] = Solve_Tikh(sino, A)
     Tik_rec = reshape(f, f_size);
     iteration = iteration - 1;
     functs = funct(1:iteration);
-    figure;
-    imshow(Tik_rec, [])
 end
