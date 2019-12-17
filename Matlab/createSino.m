@@ -21,7 +21,7 @@ function sinogram = createSino(filePath, photoName, binning, shift, angles, visu
         im = double(imread(fileName));
         
         % Shift the picture to center it based on rotation axis
-        im = circshift(im, shift, 1);
+        im = circshift(im, shift, 2);
 
         % Do binning
         if binning > 1

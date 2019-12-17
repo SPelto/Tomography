@@ -6,7 +6,7 @@ function [Tik_rec] = Solve_Tikh(sino, A, N, alpha)
     gamma = 1.e-4;
     beta = 0.4;
     lambda = 1.3;
-    stopcrit = 3;
+    stopcrit = 2;
     tolstop = 1e-4;
 
     f_size = size(f0);

@@ -17,8 +17,8 @@ maxpowit = 10;
 x = zeros(N);
 x = x(:);
 gamma = 1.e-4;
-stopcrit = 3;
-tolstop = 1e-2;
+stopcrit = 2;
+tolstop = 1e-4;
 
 % Allocation
 iter = 1;
@@ -120,6 +120,6 @@ end
 iter = iter - 1;
 funct = funct(1:iter);
 
-TV_rec = x;
+TV_rec = reshape(x, [N,N]);
 
 end
